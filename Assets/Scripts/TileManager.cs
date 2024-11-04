@@ -27,10 +27,12 @@ public class TileManager : MonoBehaviour
 
     void Start()
     {
-        GenerateMap(10, '#', 10, '~', file);
+        GenerateMap(10, '#', 20, '~', file);
 
+        ConvertMapToTileMap(file);
         columnIndex = 12;
         rowIndex = 4;
+        
         for (int i = 0; i < columnLength; i++)
         {
             //Draw the left side
@@ -85,7 +87,7 @@ public class TileManager : MonoBehaviour
             
             //Looping through the height integer
             for (int y = 0; y < height; y++)
-            {
+            {                
                 //Checking if we are at the top or bottom of the screen (height variable)
                 if (y == 0 || y == height - 1)
                 {
@@ -100,18 +102,43 @@ public class TileManager : MonoBehaviour
                 
                 //Writing each column of each row (except for the top and bottom row) with the character used for the inside
                 for (int x = 0; x < width; x++)
-                {                    
-                    writer.Write(insideChar);
+                {                                       
+                    writer.Write(insideChar);                    
                 }
                 
+                //Tracking how many characters are in each line
+                
                 //Writing the Right Border
-                writer.Write(borderChar);
-
-
+                writer.Write(borderChar);                                
+                
+                //Starting a new Line
                 writer.WriteLine();
             }
-        }
-        writer.Close();
-        
+        }        
+        writer.Close();        
+    }
+    void ConvertMapToTileMap(string mapData)
+    {
+        int index = 0;
+        using (StreamReader reader = new StreamReader(mapData))
+        {
+            //Reading each line of the text file and storing it as a string (I CAN LATER REFER TO INDIVIDUAL CHARACTERS)
+            string mapRows = reader.ReadToEnd();
+            Debug.Log(mapRows);
+
+            //For each valid character (not a white space or new line)
+            foreach(char c in mapRows)
+            {
+                //If the character is valid
+                if (!char.IsWhiteSpace(c))
+                {
+                    index += 1;
+                    Debug.Log(c);
+                }
+                
+            }
+            //Printing how many valid characters there are in the text file.
+            Debug.Log(index);
+        }                        
     }
 }
