@@ -576,8 +576,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileMap: {fileID: 848260007}
   tileBase: {fileID: 11400000, guid: 28880a8c41ec2a4458e7c43367a31c6b, type: 2}
-  columnLength: 10
-  rowLength: 12
+  columnLength: 0
+  rowLength: 0
   gridOrigin: {x: 0, y: 0}
   cellSize: 1
 --- !u!1660057539 &9223372036854775807
