@@ -2,18 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using TMPro;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.WSA;
 
 public class TileManager : MonoBehaviour
 {
     string file = "Assets/TextFiles/MapTextFile.txt";
     
     public Tilemap tileMap;
+    //Tiles to be spawned
     public TileBase tileBase;
+    public TileBase tileBaseTwo;
+    public TileBase tileBaseThree;
+    public TileBase tileBaseFour;
 
     int rowIndex;
     int columnIndex;
@@ -27,36 +33,9 @@ public class TileManager : MonoBehaviour
 
     void Start()
     {
-        GenerateMap(10, '#', 20, '~', file);
+        GenerateMap(file, 10, '#', 20, '~');
 
-        ConvertMapToTileMap(file);
-        columnIndex = 12;
-        rowIndex = 4;
-        
-        for (int i = 0; i < columnLength; i++)
-        {
-            //Draw the left side
-            ReplaceTile(new Vector3Int(-columnIndex, rowIndex, 0), tileBase);
-
-            //Drawing Top border
-            for (int t = -rowLength; t < rowLength; t++)
-            {
-                //Top border Y position
-                if (rowIndex == 4)
-                {
-                    ReplaceTile(new Vector3Int(t, 4, 0), tileBase);
-                }   
-                else if (rowIndex == -5)
-                {
-                    ReplaceTile(new Vector3Int(t, -5, 0), tileBase);
-                }
-            }                                          
-            
-            //Draw the right side
-            ReplaceTile(new Vector3Int(columnIndex, rowIndex, 0), tileBase);            
-            rowIndex--;            
-        }
-        
+        ConvertMapToTileMap(file);                
     }
 
     // Update is called once per frame
@@ -68,7 +47,7 @@ public class TileManager : MonoBehaviour
         int column = Mathf.FloorToInt(gridPosition.x / cellSize);
         int row = Mathf.FloorToInt(gridPosition.y / cellSize);
 
-        //Debug.Log($"Column: {column}, Row: {row}");
+        Debug.Log($"Column: {column}, Row: {row}");
     }
 
     void ReplaceTile(Vector3Int tileToReplace, TileBase tile)
@@ -77,7 +56,7 @@ public class TileManager : MonoBehaviour
     }
     
 
-    void GenerateMap(int height, char c1, int width, char c2, string filePath)
+    void GenerateMap(string filePath, int height, char c1, int width, char c2)
     {
         using StreamWriter writer = new StreamWriter(filePath, false);
         {
@@ -87,7 +66,8 @@ public class TileManager : MonoBehaviour
             
             //Looping through the height integer
             for (int y = 0; y < height; y++)
-            {                
+            {
+                int rockPosition = UnityEngine.Random.Range(0, width);
                 //Checking if we are at the top or bottom of the screen (height variable)
                 if (y == 0 || y == height - 1)
                 {
@@ -100,10 +80,19 @@ public class TileManager : MonoBehaviour
                 //Writing the Left Border
                 writer.Write(borderChar);
                 
-                //Writing each column of each row (except for the top and bottom row) with the character used for the inside
-                for (int x = 0; x < width; x++)
-                {                                       
-                    writer.Write(insideChar);                    
+                //Writing each character (column) of each row (except for the top and bottom row and sides) with the character used for the inside
+                for (int x = 1; x < width - 1; x++)
+                {
+                    //if the x position in the rock position AND its not on the border, draw a ROCK
+                    if (x == rockPosition && y != 0 && y != height - 1)
+                    {
+                        writer.Write("$");
+                    }                        
+                    else
+                    {
+                        writer.Write(insideChar);
+                    }
+                                                                               
                 }
                 
                 //Tracking how many characters are in each line
@@ -119,26 +108,68 @@ public class TileManager : MonoBehaviour
     }
     void ConvertMapToTileMap(string mapData)
     {
+        
+        
+        Vector3Int offset = new Vector3Int(-10, -5, 0);
         int index = 0;
-        using (StreamReader reader = new StreamReader(mapData))
-        {
-            //Reading each line of the text file and storing it as a string (I CAN LATER REFER TO INDIVIDUAL CHARACTERS)
-            string mapRows = reader.ReadToEnd();
-            Debug.Log(mapRows);
+        string[] mapRows = File.ReadAllLines(mapData);
 
-            //For each valid character (not a white space or new line)
-            foreach(char c in mapRows)
+        int mapWidth = mapRows[0].Length;
+        int mapHeight = mapRows.Count();
+
+        
+
+        Debug.Log($"Width: {mapWidth} Height: {mapHeight}");
+        
+        //Looping through each row
+        for (int y = 0; y < mapHeight; y++)
+        {
+            //Vector3Int rockPosition = new Vector3Int(UnityEngine.Random.Range(0, mapWidth), 0, 0);
+            
+            //Looping through each coloumn of each row
+            for (int x = 0; x < mapWidth; x++)
             {
-                //If the character is valid
-                if (!char.IsWhiteSpace(c))
-                {
-                    index += 1;
-                    Debug.Log(c);
-                }
+                char character = mapRows[y][x];
+                index += 1;
+                Debug.Log(character);
+
+                Vector3Int tilePosition = new Vector3Int(x, y, 0);
                 
+                //Spawning the tiles
+                if (character == '#')
+                {
+                    ReplaceTile(tilePosition + offset, tileBase);
+                }
+                else if(character == '~')
+                {
+                    ReplaceTile(tilePosition + offset, tileBaseTwo);
+                }
+                else if (character == '$')
+                {                    
+                    ReplaceTile(tilePosition + offset, tileBaseThree);
+                }
+                else if (character == '@')
+                {
+                    ReplaceTile(tilePosition + offset, tileBaseFour);
+                }
+
             }
-            //Printing how many valid characters there are in the text file.
-            Debug.Log(index);
-        }                        
+        }
+        Debug.Log(index);
+        
+        
+        //foreach(string s in mapRows)
+        //{
+        //    Debug.Log($"String: {s} Length: {s.Length}");
+        //    int characterCount = s.Length;
+            
+        //    for (int i = 0; i < characterCount; i++)
+        //    {
+        //        Debug.Log(i);
+        //        char character  = mapRows[]
+        //    }
+
+        //}            
+                                
     }
 }

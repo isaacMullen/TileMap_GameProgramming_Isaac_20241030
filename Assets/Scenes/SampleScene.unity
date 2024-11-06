@@ -228,7 +228,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 6
+  orthographic size: 5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -576,6 +576,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tileMap: {fileID: 848260007}
   tileBase: {fileID: 11400000, guid: 28880a8c41ec2a4458e7c43367a31c6b, type: 2}
+  tileBaseTwo: {fileID: 11400000, guid: 56e52007546d97c4a8d01f004c2a9d41, type: 2}
+  tileBaseThree: {fileID: 11400000, guid: ec5632ac185d5a94f9051b382d01f822, type: 2}
+  tileBaseFour: {fileID: 11400000, guid: 351827e1a475b884482ce0574c7a92c1, type: 2}
   columnLength: 0
   rowLength: 0
   gridOrigin: {x: 0, y: 0}
